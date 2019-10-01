@@ -130,7 +130,11 @@ output.listItem=({file,view},{id,list,text})=>v.dd({id},v.span({},list.length),t
 output.flashCard=({file,view})=>
 {
 	const
-	currentQuestion=view.quiz.findIndex(({correct})=>[enums.unflipped,enums.unanswered].includes(correct)),
+	unanswered=view.quiz.filter(({correct})=>[enums.unflipped,enums.unanswered].includes(correct)),
+	highestLevel=unanswered.reduce((highestLevel,{level})=>level>highestLevel?level:highestLevel,0),
+	currentQuestion=view.quiz.findIndex(({correct,level})=>
+		level===highestLevel&&[enums.unflipped,enums.unanswered].includes(correct)
+	),
 	currentCard=view.quiz[currentQuestion],
 	[front]=currentCard.text.split('='),
 	flipped=currentCard.correct !==enums.unflipped,
