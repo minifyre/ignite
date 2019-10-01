@@ -28,14 +28,14 @@ logic.levelUpCards=(file,cards)=>
 	getEntry=curry(logic.getEntry,file),
 	levels=getEntry('_').list.map(getEntry)
 
-	cards.forEach(item=>
+	cards.forEach(card=>
 	{
-		const parent=levels.find(level=>level.list.includes(item.id))
-		parent.list.splice(parent.list.indexOf(item.id),1)//remove from old parent
-
-		file.data[parent.id+1].list.push(item.id)//add to new parent
+		const parent=levels.find(level=>level.list.includes(card.id))
+		parent.list.splice(parent.list.indexOf(card.id),1)//remove from old parent
+		//the card level needs to be used instead as it may have been leveled down
+		file.data[card.level||parent.id+1].list.push(card.id)//add to new parent
 		//todo: when incremental ids are changed, this will break
-		file.data[item.id].answered=item.answered//add time to card for future scheduling
+		file.data[card.id].answered=card.answered//add time to card for future scheduling
 	})
 }
 
@@ -56,7 +56,8 @@ input.answer=({file,view},i,isCorrect)=>
 		const
 		answered=Date.now(),//todo: this needs to be passed in to make this function pure
 		cards=view.quiz
-			.map(item=>spark.omit(['correct','level'],item))
+			.map(item=>item.level===1?Object.assign(item,{level:2}):item)//levelup down leveled cards
+			// note: temp level & correct properties do not need to be removed as only the item's parent is changing
 			.map(item=>Object.assign(item,{answered}))
 
 		logic.levelUpCards(file,cards)
@@ -112,7 +113,6 @@ input.play=(state,startTestAt=Date.now()+((1000*60*60*24)*2))=>
 			// only answer questions on schedule
 			.filter(item=>util.daysSince(startTestAt,item.answered||0)>=Math.pow(2,item.level-1))
 		)
-
 	state.view.quiz=cards2study
 		.map(spark.shuffle)
 		.flat()
