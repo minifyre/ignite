@@ -28,14 +28,14 @@ logic.levelUpCards=(file,cards)=>
 	getEntry=curry(logic.getEntry,file),
 	levels=getEntry('_').list.map(getEntry)
 
-	cards.forEach(item=>
+	cards.forEach(card=>
 	{
-		const parent=levels.find(level=>level.list.includes(item.id))
-		parent.list.splice(parent.list.indexOf(item.id),1)//remove from old parent
-
-		file.data[parent.id+1].list.push(item.id)//add to new parent
+		const parent=levels.find(level=>level.list.includes(card.id))
+		parent.list.splice(parent.list.indexOf(card.id),1)//remove from old parent
+		//the card level needs to be used instead as it may have been leveled down
+		file.data[card.level||parent.id+1].list.push(card.id)//add to new parent
 		//todo: when incremental ids are changed, this will break
-		file.data[item.id].answered=item.answered//add time to card for future scheduling
+		file.data[card.id].answered=card.answered//add time to card for future scheduling
 	})
 }
 
@@ -56,7 +56,8 @@ input.answer=({file,view},i,isCorrect)=>
 		const
 		answered=Date.now(),//todo: this needs to be passed in to make this function pure
 		cards=view.quiz
-			.map(item=>spark.omit(['correct','level'],item))
+			.map(item=>Object.assign(item,{level:item.level+1}))//levelup cards (downleveled go to level 2)
+			// note: temp level & correct properties do not need to be removed as only the item's parent is changing
 			.map(item=>Object.assign(item,{answered}))
 
 		logic.levelUpCards(file,cards)
@@ -73,11 +74,7 @@ input.answer=({file,view},i,isCorrect)=>
 				question.level=1
 				question.correct=enums.unflipped
 			}
-			else if(question.correct===enums.correct)
-			{
-				question.level+=1
-				question.correct=enums.graded
-			}
+			else if(question.correct===enums.correct) question.correct=enums.graded
 
 			return question
 		})
@@ -112,7 +109,6 @@ input.play=(state,startTestAt=Date.now()+((1000*60*60*24)*2))=>
 			// only answer questions on schedule
 			.filter(item=>util.daysSince(startTestAt,item.answered||0)>=Math.pow(2,item.level-1))
 		)
-
 	state.view.quiz=cards2study
 		.map(spark.shuffle)
 		.flat()
@@ -125,12 +121,19 @@ input.play=(state,startTestAt=Date.now()+((1000*60*60*24)*2))=>
 util.daysSince=(date,past)=>Math.round((date-past)/(1000*60*60*24))//ms*sec*min*hrs
 
 
-output.listItem=({file,view},{id,list,text})=>v.dd({id},v.span({},list.length),text)
+output.listItem=({file,view},{id,list,text})=>v.dd({id,class:'item'},
+	v.span({class:'icon'},list.length),
+	v.span({class:'desc'},text)
+)
 
 output.flashCard=({file,view})=>
 {
 	const
-	currentQuestion=view.quiz.findIndex(({correct})=>[enums.unflipped,enums.unanswered].includes(correct)),
+	unanswered=view.quiz.filter(({correct})=>[enums.unflipped,enums.unanswered].includes(correct)),
+	highestLevel=unanswered.reduce((highestLevel,{level})=>level>highestLevel?level:highestLevel,0),
+	currentQuestion=view.quiz.findIndex(({correct,level})=>
+		level===highestLevel&&[enums.unflipped,enums.unanswered].includes(correct)
+	),
 	currentCard=view.quiz[currentQuestion],
 	[front]=currentCard.text.split('='),
 	flipped=currentCard.correct !==enums.unflipped,
@@ -178,7 +181,7 @@ export default ({file,view})=>
 	.map(item=>{
 		const {id,list}=item
 
-		return v.dl({id},...list.map(getEntry).map(curry(output.listItem,{file,view})))
+		return v.dl({id,class:'list'},...list.map(getEntry).map(curry(output.listItem,{file,view})))
 	}),
 	body=view.quiz.length?output.flashCard({file,view}):openLists
 
