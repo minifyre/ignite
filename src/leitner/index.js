@@ -56,7 +56,7 @@ input.answer=({file,view},i,isCorrect)=>
 		const
 		answered=Date.now(),//todo: this needs to be passed in to make this function pure
 		cards=view.quiz
-			.map(item=>item.level===1?Object.assign(item,{level:2}):item)//levelup down leveled cards
+			.map(item=>Object.assign(item,{level:item.level+1}))//levelup cards (downleveled go to level 2)
 			// note: temp level & correct properties do not need to be removed as only the item's parent is changing
 			.map(item=>Object.assign(item,{answered}))
 
@@ -74,11 +74,7 @@ input.answer=({file,view},i,isCorrect)=>
 				question.level=1
 				question.correct=enums.unflipped
 			}
-			else if(question.correct===enums.correct)
-			{
-				question.level+=1
-				question.correct=enums.graded
-			}
+			else if(question.correct===enums.correct) question.correct=enums.graded
 
 			return question
 		})
