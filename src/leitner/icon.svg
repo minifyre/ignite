@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" scale="4">
+	<!-- <defs>
+		<mask id="shadow">
+			<rect x="0" y="0" width="100" height="100" rx="25" fill="#fff" />
+			<rect x="0" y="0" width="100" height="95" rx="25" fill="#000" />
+		</mask>
+		<mask id="eyes">
+			<rect x="0" y="0" width="100" height="100" rx="25" fill="#fff" />
+			<rect x="0" y="47.5" width="100" height="20" fill="#000" />
+		</mask>
+	</defs> -->
+	<rect x="0" y="0" width="100" height="100" fill="#eee" opacity="1" />
+
+	<circle cx="50" cy="75" r="7.5" fill="hsl(0,100%,60%)" />
+	<!-- dividers -->
+	<rect fill="hsl(0,100%,60%)" x="5" y="65" width="90" height="10" />
+	<rect fill="hsl(24,100%,60%)" x="5" y="55" width="90" height="10" />
+	<rect fill="hsl(48,100%,60%)" x="5" y="45" width="90" height="10" />
+	<rect fill="hsl(93,100%,60%)" x="5" y="35" width="90" height="10" />
+	<rect fill="hsl(192,100%,60%)" x="5" y="25" width="90" height="10" />
+	<rect fill="hsl(275,100%,60%)" x="5" y="15" width="90" height="10" />
+	<rect fill="hsl(335,100%,60%)" x="5" y="5" width="90" height="10" />
+	<!-- pages -->
+	<rect fill="#eee" x="7.5" y="60" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="62" width="85" height="1" />
+
+	<rect fill="#eee" x="7.5" y="50" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="52" width="85" height="1" />
+
+	<rect fill="#eee" x="7.5" y="40" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="42" width="85" height="1" />
+
+	<rect fill="#eee" x="7.5" y="30" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="32" width="85" height="1" />
+
+	<rect fill="#eee" x="7.5" y="20" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="22" width="85" height="1" />
+
+	<rect fill="#eee" x="7.5" y="10" width="85" height="5" />
+	<rect fill="#222" x="7.5" y="12" width="85" height="1" />
+
+	<!-- <g mask="url(#corners)">
+		<rect mask="url(#shadow)" x="0" y="75" width="100" height="25" fill="#000" opacity="0.2" />
+	</g> -->
+</svg>
