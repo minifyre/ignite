@@ -121,7 +121,10 @@ input.play=(state,startTestAt=Date.now()+((1000*60*60*24)*2))=>
 util.daysSince=(date,past)=>Math.round((date-past)/(1000*60*60*24))//ms*sec*min*hrs
 
 
-output.listItem=({file,view},{id,list,text})=>v.dd({id},v.span({},list.length),text)
+output.listItem=({file,view},{id,list,text})=>v.dd({id,class:'item'},
+	v.span({class:'icon'},list.length),
+	v.span({class:'desc'},text)
+)
 
 output.flashCard=({file,view})=>
 {
@@ -178,7 +181,7 @@ export default ({file,view})=>
 	.map(item=>{
 		const {id,list}=item
 
-		return v.dl({id},...list.map(getEntry).map(curry(output.listItem,{file,view})))
+		return v.dl({id,class:'list'},...list.map(getEntry).map(curry(output.listItem,{file,view})))
 	}),
 	body=view.quiz.length?output.flashCard({file,view}):openLists
 
